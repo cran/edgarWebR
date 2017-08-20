@@ -3,7 +3,7 @@ Title: SEC Filings Access
 Description: A set of methods to access and parse live filing information from the
     U.S. Securities and Exchange Commission (SEC - <https://sec.gov>) including
     company and fund filings along with all associated metadata.
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person(c("Micah", "J"), "Waldstein", email = "micah@waldste.in", role = c("aut", "cre"))
     )
@@ -22,7 +22,7 @@ URL: https://mwaldstein.github.io/edgarWebR,
         https://github.com/mwaldstein/edgarWebR
 BugReports: https://github.com/mwaldstein/edgarWebR/issues
 NeedsCompilation: no
-Packaged: 2017-08-14 19:27:39 UTC; micah
+Packaged: 2017-08-20 14:33:09 UTC; micah
 Author: Micah J Waldstein [aut, cre]
 Repository: CRAN
-Date/Publication: 2017-08-15 22:04:45 UTC
+Date/Publication: 2017-08-20 16:25:50 UTC
