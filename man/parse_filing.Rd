@@ -4,7 +4,7 @@
 \alias{parse_filing}
 \title{Parse Filing}
 \usage{
-parse_filing(x, strip = TRUE, include.raw = FALSE)
+parse_filing(x, strip = TRUE, include.raw = FALSE, fix.errors = TRUE)
 }
 \arguments{
 \item{x}{- URL to a filing HTML document, html text or xml_document}
@@ -12,6 +12,9 @@ parse_filing(x, strip = TRUE, include.raw = FALSE)
 \item{strip}{- Should non-text elements be removed? Default: true}
 
 \item{include.raw}{- Include unprocessed nodes in result? Default: false}
+
+\item{fix.errors}{- Try to fix document errors (e.g. missing part labels).
+WIP. Default: true}
 }
 \value{
 a dataframe with one row per paragraph
@@ -29,9 +32,12 @@ section - e.g. just the Risk Factors. `item.name` and `part.name` are taken
 directly from the document without any attempt to normalize.
 }
 \details{
-*NOTE:* This has been tested on a range of documents, but formatting
+\strong{NOTE:} This has been tested on a range of documents, but formatting
 differences could cause failures. Please report an issue for any document
 that isn't parsed correctly.
+
+\strong{FURTHER NOTE:} Not all filings are well formed - missing headings, bad
+spacing, etc. These can all throw the parsing off!
 }
 \examples{
 head(parse_filing(paste0('https://www.sec.gov/Archives/edgar/data/',
