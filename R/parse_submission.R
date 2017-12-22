@@ -6,7 +6,7 @@
 #' Most of the time the information you need along with the specific files
 #' will be available by using \code{\link{filing_documents}}, but there are
 #' scenarios where you may want to access the full contents of the master
-#' submission - 
+#' submission -
 #'   \describe{
 #'     \item{Old Submissions}{Older submissions are not parsed into component
 #'           documents by the SEC so access requires parsing the main filing}
@@ -30,7 +30,7 @@
 #'                  '37996/000003799617000084/0000037996-17-000084.txt'))[ ,
 #'                    c('SEQUENCE', 'TYPE', 'DESCRIPTION', 'FILENAME')]
 #' @export
-parse_submission <- function (uri) {
+parse_submission <- function(uri) {
   res <- charToText(uri)
 
   parts <- data.frame(text = unlist(strsplit(res, "\n")),

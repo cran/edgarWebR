@@ -10,7 +10,9 @@ ewr_mock_bypass <- Sys.getenv("MOCK_BYPASS")
 
 if (ewr_mock_bypass == "capture") {
   message("Capturing mocks...")
-  with_mock_API <- capture_requests
+  with_mock_API <- function(f) {
+    capture_requests(f, verbose = T)
+  }
 } else if (ewr_mock_bypass == "true" | !ewr_has_mocks) {
   message("Bypassing mocks...")
   with_mock_API <- force
@@ -18,7 +20,11 @@ if (ewr_mock_bypass == "capture") {
 
 # override buildMockUrl to shorten paths
 # buildMockURL may not be locked in some circumstances, so try but fail quietly
-try({unlockBinding("buildMockURL", environment(httptest::buildMockURL))}, silent = TRUE)
+try({
+  unlockBinding("buildMockURL", environment(httptest::buildMockURL))
+  },
+  silent = FALSE)
+
 buildMockURL.orig <- httptest::buildMockURL
 buildMockURL.new <- function(req, method = "GET") {
   path <- buildMockURL.orig(req, method = method)
@@ -31,4 +37,9 @@ buildMockURL.new <- function(req, method = "GET") {
 
   path
 }
-assign("buildMockURL", buildMockURL.new, envir = environment(httptest::buildMockURL))
+
+# Unsure why this change has happened, but this is known working...
+assign("buildMockURL",
+       buildMockURL.new,
+       envir = environment(httptest::buildMockURL))
+assign("buildMockURL", buildMockURL.new)

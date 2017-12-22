@@ -194,4 +194,22 @@ with_mock_API({
     expect_equal(length(unique(res[res$part.name == "PART II",
                                "item.name"])), 9)
   })
+  test_that("Treats <br> as space", {
+    href <- "https://www.sec.gov/Archives/edgar/data/1399855/000119312514363235/d778787d10q.htm"
+    res <- parse_filing(href)
+    tmp <- res[grepl("Weighted average exercise price", res$text,
+                     ignore.case = F), ]
+    expect_equal(nrow(tmp), 1)
+  })
+  test_that("Handles HTML wrapped text filling (", {
+    href <- "https://www.sec.gov/Archives/edgar/data/1424844/000092290708000774/form10k_122308.htm"
+    res <- parse_filing(href)
+    expect_is(res, "data.frame")
+    expect_length(res, 3)
+    expect_equal(nrow(res), 796)
+    expect_equal(length(unique(res$item.name)), 19)
+    expect_equal(length(unique(res$part.name)), 4)
+    expect_equal(length(unique(res[res$part.name == "PART II",
+                               "item.name"])), 8)
+  })
 })
