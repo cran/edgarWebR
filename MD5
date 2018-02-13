@@ -1,4 +1,4 @@
-ee996dad6b898afff1ff00ac0e74e35f *DESCRIPTION
+fafa04480046b02aad3288a888738b05 *DESCRIPTION
 360e8789a6e629b958feae17f2737ec4 *LICENSE
 97879e2ab95224001dc84e9cc6224046 *NAMESPACE
 9b12df72b31a6a1a0ad550953fc459c0 *R/browse_edgar.R
@@ -10,9 +10,9 @@ ee996dad6b898afff1ff00ac0e74e35f *DESCRIPTION
 fa887d5edc3b46919adab66d9b4dc290 *R/filing_filers.R
 b7bae95e6e37db2b7e8dc696f596e7fc *R/filing_funds.R
 b4dfeeeb0d524ce24ab1697481a97147 *R/filing_information.R
-2e9845d7c94fee07e5e61461d2919779 *R/full_text.R
+3a42b84a75d5668e301c7b1c6b991c89 *R/full_text.R
 c7c6865c0240866c51c26591bcc39e49 *R/fund_search.R
-492a9418731ba658ddf9e7381e694147 *R/header_search.R
+d9c166f51dc5b7bf2a2b0db246010cc2 *R/header_search.R
 24dc8dfe384ba639e850c341db319672 *R/latest_filings.R
 9bfdccf2709c0d610c74c1cb5830b4cc *R/map_xml.R
 0ce12f6e5f269df14d3c561a3a57691a *R/parse_filing.R
@@ -22,10 +22,10 @@ c7c6865c0240866c51c26591bcc39e49 *R/fund_search.R
 84a36b6eda3cb2cae9165927639481f8 *build/vignette.rds
 05ef7d071ba7726bbfd71387ea08f6bf *inst/doc/edgarWebR.R
 bfba6d575b81145b08db5654882e042d *inst/doc/edgarWebR.Rmd
-eae1fb504580c1097abc4b1f1fa1a024 *inst/doc/edgarWebR.html
-20daf3e916a617531627c40e42497dc7 *inst/doc/parsing.R
-9e4e07f3b2126869f9722a5f13b135f9 *inst/doc/parsing.Rmd
-3e05e1aa7f38d024c6fd5ed1531397d8 *inst/doc/parsing.html
+279f447ad3863ec453195cabb71135fc *inst/doc/edgarWebR.html
+1e6c3a4b39d4fdde5d875ffbddc20d41 *inst/doc/parsing.R
+b59f01e7ddae14b51098ccc93a021ed3 *inst/doc/parsing.Rmd
+1e706e74da53129e28618b723d5be7c3 *inst/doc/parsing.html
 417342a8da30e0e73e4ccd1a462803ee *man/browse_edgar.Rd
 d89a07f328d42d9894b76d29988f19f4 *man/company_details.Rd
 5d079c73c2b298dc86a8dd0a8019db39 *man/company_filings.Rd
@@ -35,9 +35,9 @@ fee3fe190a9b146b9932509cf2c56551 *man/filing_documents.Rd
 3b6343a204eccbe4f3430d70f7fa01ed *man/filing_filers.Rd
 22fe1d60913c8f38e7cc31b77e797711 *man/filing_funds.Rd
 216f13ca83e96cbee2191fd62714becf *man/filing_information.Rd
-a2c7a12d00e330047e5516fc35654947 *man/full_text.Rd
+40cd00e46e4a99d503093eb46466e46c *man/full_text.Rd
 b99b603324e9821f26a07af20852a3d1 *man/fund_search.Rd
-5cecde31fa091d5fd3f552ef61bfd66f *man/header_search.Rd
+24c3874e3d09aaaaadfbd2d4824c66a9 *man/header_search.Rd
 48766a6d52cbcd0fbf5252bbf5689567 *man/latest_filings.Rd
 e0e50dddeb78ee0448ebfc8c841957e6 *man/map_xml.Rd
 3c884098ef99aa807cae335038d465b7 *man/parse_filing.Rd
@@ -96,4 +96,4 @@ b747c4d0201ede8b9520f8374783e498 *tests/testthat/test_full_text.R
 80fdd291a829c88e2f813ac70fa45ecd *tests/testthat/test_parse_submission.R
 84a47115d28779f5bddf990159747aa2 *tests/testthat/test_parse_text_filing.R
 bfba6d575b81145b08db5654882e042d *vignettes/edgarWebR.Rmd
-9e4e07f3b2126869f9722a5f13b135f9 *vignettes/parsing.Rmd
+b59f01e7ddae14b51098ccc93a021ed3 *vignettes/parsing.Rmd
