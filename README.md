@@ -39,7 +39,7 @@ The EDGAR System provides a number of [tools](https://www.sec.gov/edgar/searched
 <tr class="odd">
 <td>Company</td>
 <td><a href="https://www.sec.gov/edgar/searchedgar/companysearch.html" class="uri">https://www.sec.gov/edgar/searchedgar/companysearch.html</a></td>
-<td><code>company_information()</code>, <code>company_details()</code>, <code>company_filings()</code></td>
+<td><code>company_search()</code>, <code>company_information()</code>, <code>company_details()</code>, <code>company_filings()</code></td>
 </tr>
 <tr class="even">
 <td>Recent Filings</td>
@@ -59,47 +59,47 @@ The EDGAR System provides a number of [tools](https://www.sec.gov/edgar/searched
 <tr class="odd">
 <td>Fund Disclosures</td>
 <td><a href="https://www.sec.gov/edgar/searchedgar/prospectus.htm" class="uri">https://www.sec.gov/edgar/searchedgar/prospectus.htm</a></td>
-<td>N/A</td>
+<td>Use <code>company_search()</code> and specify the 'type' parameter as 485</td>
 </tr>
 <tr class="even">
 <td>Fund Voting Records</td>
 <td><a href="https://www.sec.gov/edgar/searchedgar/n-px.htm" class="uri">https://www.sec.gov/edgar/searchedgar/n-px.htm</a></td>
-<td>N/A</td>
+<td>Use <code>company_search()</code> and specify the 'type' parameter as 'N-PX'</td>
 </tr>
 <tr class="odd">
 <td>Fund Search</td>
 <td><a href="https://www.sec.gov/edgar/searchedgar/mutualsearch.html" class="uri">https://www.sec.gov/edgar/searchedgar/mutualsearch.html</a></td>
-<td><code>fund_search()</code></td>
+<td><code>fund_search()</code>, <code>fund_fast_search()</code></td>
 </tr>
 <tr class="even">
 <td>Var. Insurance Products</td>
 <td><a href="https://www.sec.gov/edgar/searchedgar/vinsurancesearch.html" class="uri">https://www.sec.gov/edgar/searchedgar/vinsurancesearch.html</a></td>
-<td>N/A</td>
+<td><code>variable_insurance_search()</code>, <code>variable_insurance_fast_search()</code></td>
 </tr>
 <tr class="odd">
 <td>Confidential treatment orders</td>
 <td><a href="https://www.sec.gov/edgar/searchedgar/ctorders.htm" class="uri">https://www.sec.gov/edgar/searchedgar/ctorders.htm</a></td>
-<td>N/A</td>
+<td>Use <code>header_search()</code>, <code>company_search()</code>, <code>latest_filings()</code>, or <code>full_text()</code> and use form types 'CT ORDER'</td>
 </tr>
 <tr class="even">
 <td>Effectiveness notices</td>
 <td><a href="https://www.sec.gov/cgi-bin/browse-edgar?action=geteffect" class="uri">https://www.sec.gov/cgi-bin/browse-edgar?action=geteffect</a></td>
-<td>N/A</td>
+<td><code>effectiveness()</code></td>
 </tr>
 <tr class="odd">
 <td>CIK</td>
 <td><a href="https://www.sec.gov/edgar/searchedgar/cik.htm" class="uri">https://www.sec.gov/edgar/searchedgar/cik.htm</a></td>
-<td>N/A</td>
+<td><code>cik_search()</code></td>
 </tr>
 <tr class="even">
 <td>Daily Filings</td>
 <td><a href="https://www.sec.gov/edgar/searchedgar/currentevents.htm" class="uri">https://www.sec.gov/edgar/searchedgar/currentevents.htm</a></td>
-<td>N/A</td>
+<td><code>current_events()</code></td>
 </tr>
 <tr class="odd">
 <td>Correspondence</td>
 <td><a href="https://www.sec.gov/answers/edgarletters.htm" class="uri">https://www.sec.gov/answers/edgarletters.htm</a></td>
-<td>N/A</td>
+<td>Use <code>header_search()</code>, <code>company_search()</code>, <code>latest_filings()</code>, or <code>full_text()</code> and use form types 'upload' or 'corresp'</td>
 </tr>
 </tbody>
 </table>
@@ -119,7 +119,19 @@ While edgarWebR is primarily focused on providing an interface to the online SEC
 -   `parse_submission()` - takes a full submission SGML document and parses out compontent documents. Most of the time, the documents of interest in a particular submission will be online and accessible via `filing_documents()` - this function is to unpack the raw submission to get all the doucments. You may also find it more efficient if you're regularly downloading all of the files in a given submission.
 -   `parse_filing()` - Takes a HTML narrative filing and annotates each paragraph with item and part numbers.
 
-### Installation
+### Data Sets
+
+There is one dataset provieded with edgarWebR - **sic\_codes**, providing a catalog of SIC codes and their hierarchy.
+
+### URL Tools
+
+There are also a number of utility functions to help construct useful URL's once you have a company CIK, submission accession number or specific file.
+
+-   `company_href()` for linking to the company page
+-   `submission_index_href()` and its family of related functions for linking to a specific submission and file.
+
+Installation
+------------
 
 edgarWebR is available from CRAN, so can be simply installed via
 
@@ -143,19 +155,58 @@ company_filings("AAPL", type = "10-K", count = 10)
 #>        accession_number act file_number filing_date accepted_date
 #> 1  0000320193-17-000070  34   001-36743  2017-11-03    2017-11-03
 #> 2  0001628280-16-020309  34   001-36743  2016-10-26    2016-10-26
+#> 3  0001193125-15-356351  34   001-36743  2015-10-28    2015-10-28
+#> 4  0001193125-14-383437  34   000-10030  2014-10-27    2014-10-27
+#> 5  0001193125-13-416534  34   000-10030  2013-10-30    2013-10-29
+#> 6  0001193125-12-444068  34   000-10030  2012-10-31    2012-10-31
+#> 7  0001193125-11-282113  34   000-10030  2011-10-26    2011-10-26
+#> 8  0001193125-10-238044  34   000-10030  2010-10-27    2010-10-27
+#> 9  0001193125-10-012091  34   000-10030  2010-01-25    2010-01-25
+#> 10 0001193125-09-214859  34   000-10030  2009-10-27    2009-10-27
 #>                                                                                                href
 #> 1  https://www.sec.gov/Archives/edgar/data/320193/000032019317000070/0000320193-17-000070-index.htm
 #> 2  https://www.sec.gov/Archives/edgar/data/320193/000162828016020309/0001628280-16-020309-index.htm
+#> 3  https://www.sec.gov/Archives/edgar/data/320193/000119312515356351/0001193125-15-356351-index.htm
+#> 4  https://www.sec.gov/Archives/edgar/data/320193/000119312514383437/0001193125-14-383437-index.htm
+#> 5  https://www.sec.gov/Archives/edgar/data/320193/000119312513416534/0001193125-13-416534-index.htm
+#> 6  https://www.sec.gov/Archives/edgar/data/320193/000119312512444068/0001193125-12-444068-index.htm
+#> 7  https://www.sec.gov/Archives/edgar/data/320193/000119312511282113/0001193125-11-282113-index.htm
+#> 8  https://www.sec.gov/Archives/edgar/data/320193/000119312510238044/0001193125-10-238044-index.htm
+#> 9  https://www.sec.gov/Archives/edgar/data/320193/000119312510012091/0001193125-10-012091-index.htm
+#> 10 https://www.sec.gov/Archives/edgar/data/320193/000119312509214859/0001193125-09-214859-index.htm
 #>      type film_number
 #> 1    10-K   171174673
 #> 2    10-K   161953070
+#> 3    10-K   151180619
+#> 4    10-K   141175110
+#> 5    10-K   131177575
+#> 6    10-K   121171452
+#> 7    10-K   111159350
+#> 8    10-K   101145250
+#> 9  10-K/A    10545024
+#> 10   10-K   091139493
 #>                                                 form_name description
 #> 1  Annual report [Section 13 and 15(d), not S-K Item 405]        <NA>
 #> 2  Annual report [Section 13 and 15(d), not S-K Item 405]        <NA>
+#> 3  Annual report [Section 13 and 15(d), not S-K Item 405]        <NA>
+#> 4  Annual report [Section 13 and 15(d), not S-K Item 405]        <NA>
+#> 5  Annual report [Section 13 and 15(d), not S-K Item 405]        <NA>
+#> 6  Annual report [Section 13 and 15(d), not S-K Item 405]        <NA>
+#> 7  Annual report [Section 13 and 15(d), not S-K Item 405]        <NA>
+#> 8  Annual report [Section 13 and 15(d), not S-K Item 405]        <NA>
+#> 9  Annual report [Section 13 and 15(d), not S-K Item 405]        <NA>
+#> 10 Annual report [Section 13 and 15(d), not S-K Item 405]        <NA>
 #>     size
 #> 1  14 MB
 #> 2  13 MB
-#>  [ reached getOption("max.print") -- omitted 8 rows ]
+#> 3   9 MB
+#> 4  12 MB
+#> 5  11 MB
+#> 6   9 MB
+#> 7   9 MB
+#> 8  13 MB
+#> 9   5 MB
+#> 10  3 MB
 ```
 
 Related Packages

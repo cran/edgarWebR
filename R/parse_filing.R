@@ -134,11 +134,31 @@ parse_text_filing <- function(x,
 
 #' Manually identify the node paths
 #' @noRd
-build_parts <- function(doc, xpath_base, include.raw = F) {
+build_parts <- function(doc, xpath_base,
+                        include.raw = F,
+                        include.path = F) {
+  nodes <- doc_nodes(doc, xpath_base)
+
+  doc.parts <- data.frame(text = xml2::xml_text(nodes),
+                          name = xml2::xml_name(nodes),
+                          stringsAsFactors = FALSE)
+
+  if (include.raw) {
+    doc.parts$raw <- as.character(nodes)
+  }
+  if (include.path) {
+    doc.parts$path <- xml2::xml_path(nodes)
+  }
+  return(doc.parts)
+}
+
+#' @noRd
+doc_nodes <- function(doc, xpath_base) {
   # There be dragons here...
   # Basically this extacts all the individual paragraphs from a document in one
   # go. This is so bad on so many levels... but the inherent messiness of the
   # filings prevents anything much more robust.
+  # xpath_parts <- c( "//div[count(.//div) < 1]")
   xpath_parts <- c(
     "/*[name() != 'div' and
         not(font[count(div) > 1]) and
@@ -146,36 +166,130 @@ build_parts <- function(doc, xpath_base, include.raw = F) {
             starts-with(tr[2], ' PART'))]",
     "/div[count(p|div) <= 1 and
           not(div[count(div) > 1]) and
-          not(count(div/div/div) > 1)]",
+          not(count(div/div/div) > 1) and
+          count(div/font) = 0]",
     "/div[count(p|div) <= 1 and
           count(div/div) > 1 and
           count(div/div/div) <= 1]/div/*",
     "/div[count(p|div) <= 1 and
           count(div/div) > 1 and
-          count(div/div/div) >= 1]/div/div/*",
+          count(div/div/div) >= 1]/div/div/*[count(div) < 1]",
     "/div[count(div) <= 1 and
           count(div/div/div) > 1 and
-          count(div/div/div/div/div) <= 1]/div/div/div",
-    "/div[count(div/div/div/div/div) > 1]/div/div/div/div/*",
+          count(div/div/div/div/div) <= 1 and
+          count(div/div/div/*) < 1]/div/div/div[count(div) < 1]",
+    "/div[count(div/div/div/div/*) > 1]/div/div/div/div/*",
+    "/div[count(div/div/div/div/*) > 1]/div/div/div/div[count(*) < 1]",
+    "/div[count(div/div/div/*) >= 1 and
+          count(div/div/div/div/*) < 1]/div/div/div/*[name() != 'font' and
+                                                      name() != 'table']",
+    "/div/div/div/div/font",
     "/div[count(p|div) <= 1 and
-          count(div/div) > 1]/div/*",
-    "/div[count(p|div) > 1]/*[count(b|div) <= 1]",
+          count(div/div) > 1 and
+          count(div/div/div) <= 1]/div/*",
+    "/div[./ul and ./div]/div/font",
+    "/div[./ul and ./div]/ul/li",
+    "/div[count(p|div) > 1]/*[count(b|div) <= 1 and count(div/div) < 1]",
+    "/div[count(p|div) > 1]/div[count(b|div) <= 1 and count(div/div) > 1]",
     "/div[count(p|div) > 1]/*[count(b|div) > 1]/*[count(div) <= 1]",
-    "/div[count(p|div) > 1]/*[count(b|div) > 1]/*[count(div)> 1]/*",
+    "/div[count(p|div) > 1]/*[count(b|div) > 1]/div[count(div) = 1]/div[count(div) = 1]/div",
+    "/div[count(p|div) > 1]/*[count(b|div) > 1]/*[count(div)> 1]/*[count(div) < 1]",
+    "/div[count(div) = 1]/div[count(div) = 1]/div[count(p)> 1]/*",
+    "/div[count(div) = 1]/div[count(font) = count(*)]/font",
+    "/div[count(div) = 1]/div/font[count(*) = 0]",
+    "/div[count(div) = 1]/div/div/table",
+    "/div/font[count(*) = 0]",
+    "/div/pre",
     "/p/font[count(p|div) > 1]/*",
-    "/table[starts-with(tr[2], 'PART') or starts-with(tr[2], ' PART')]/tr")
+    "/div/table[count(./tr) = count(./tr/td)]/tr/td/div",
+    "/table[starts-with(tr[2], 'PART') or starts-with(tr[2], ' PART')]/tr",
+
+    # This deals with poor nesting in EDGARizer
+    "/div/div/text()",
+    # Fix for early versions of EDGARizer
+    "/div/div/div/text()[1]",
+    "/div/div/div/text()[2]",
+    # Catch 'Table of Contents' for Webfilings
+    "/div/div/a",
+
+    # All multi-column tables
+    "/table[count(./tr) < count(./tr/td)]",
+    "/div/table[count(./tr) < count(./tr/td)]",
+    "/div/div/table[count(./tr) < count(./tr/td)]",
+    "/div/div/div/table[count(./tr) < count(./tr/td)]",
+    "/div/div/div/div/table[count(./tr) < count(./tr/td)]"
+    # "bare" text blocks
+    # Only impacts a few filings for huge performance hit.
+    # "/text()[normalize-space() != '']"
+    )
+
+
+  ###
+  # Paragraph identification method
+  ###
+  para.nodes <- c("font", paste0("h", seq(5)), "a", "b", "i", "u", "sup")
+  non.para <- c("div", "dl", "li", "hr", "ol", "p", "ul", "table")
+  depths <- c("./", "./*/", "./*/*/")
+  depths <- c("./", "./*/")
+  # depths <- c("./")
+  # bases <- c("//*")
+  bases <- c("/*", "/*/*", "/*/*/*", "/*/*/*/*", "/*/*/*/*/*")
+  xpath_parts_2 <- c(
+    #
+    #paste0("//", c("div", "font", paste0("h", seq(5)), "p"), "[", paste0(c(
+    # perhaps move to not(/p) and not(/*/p) and not (/*/*/p) instead of adding
+    paste0(
+      bases,
+      "[",
+      paste0(c(
+        paste0("not(",
+               apply(expand.grid(depths, non.para), 1, function(x) {
+                       paste0(x, collapse = "")
+               }),
+               ")"),
+      # paste0(c(
+      #   paste0(paste0("count(",
+      #                 apply(expand.grid(depths, para.nodes), 1, function(x) {
+      #                         paste0(x, collapse = "") }),
+      #                 ")",
+      #                 collapse = " + "),
+      #          " = ",
+      #          paste0("count(", depths, "*)", collapse = " + ")),
+
+      # paste0("count(.//*[",
+      #        paste0("local-name() != '", para.nodes, "'", collapse = " and "),
+      #      "]) = 0"),
+      # paste0("local-name(ancestor::*[1]) != '", para.nodes, "'"),
+      "local-name() != 'title'",
+      "local-name() != 'td'"),
+      collapse = " and "),
+      "]"),
+    # Unroll tables-as-formatting
+    "//table[.//tr[count(td) > 1]]",
+    "//table[not(.//tr[count(td) > 1])]/tr/td/*"
+    )
 
   xpath_parts <- paste0(xpath_base, xpath_parts)
 
   nodes <- xml2::xml_find_all(doc, paste0(xpath_parts, collapse = " | "))
 
-  doc.parts <- data.frame(text = xml2::xml_text(nodes),
-                          name = xml2::xml_name(nodes),
-                          stringsAsFactors = FALSE)
-  if (include.raw) {
-    doc.parts$raw <- as.character(nodes)
-  }
-  return(doc.parts)
+  # ensures no nested nodes
+  paths <- xml2::xml_path(nodes)
+  with.parent <- sapply(paths,
+                        function(path) {
+                          sum(startsWith(path, paths)) > 1
+                        })
+  nodes[!with.parent]
+}
+
+#' Walks into a nodlist, returning nested children
+#' @noRd
+reduce_nodes <- function(nodes) {
+    xml2::xml_find_first(nodes,
+      "descendant-or-self::*[
+        (count(*) + count(text()[normalize-space() != ''])) != 1 or
+        local-name() = 'table' or
+        (count(*) = 0 and count(text()[normalize-space() != ''])) >= 1)]")
 }
 
 #' Part/Item Processing
@@ -188,6 +302,13 @@ compute_parts <- function(doc.parsed,
                           fix.errors = TRUE) {
   return_cols <- colnames(doc.parsed)
 
+  if (nrow(doc.parsed) == 0) {
+    result <- replicate(length(return_cols) + 2, character(), simplify = F)
+    names(result) <- c(return_cols, "item.name", "part.name")
+
+    return(as.data.frame(result))
+  }
+
   # when we merge in the parts/items, order gets wonky - this preserves it
   doc.parsed$original_order <- seq(nrow(doc.parsed))
 
@@ -195,23 +316,35 @@ compute_parts <- function(doc.parsed,
                       doc.parsed$text, ignore.case = TRUE) &
                 !grepl("^part[[:space:]\u00a0]+[\\dIV]{1,3}[[:space:]\u00a0]+\\d+$",
                       doc.parsed$text, ignore.case = TRUE) &
-                (nchar(doc.parsed$text) < 34) # Hack to skip paragraphs, TOC
+                (nchar(doc.parsed$text) < 100) # Hack to skip paragraphs, TOC
                                               # and page footers
   doc.parsed$part <- cumsum(part.lines)
   parts <- doc.parsed[part.lines, c("part", "text", "original_order")]
   parts$text <- gsub("\u00a0", " ", parts$text)
+  parts$text <- gsub("\\.$", "", parts$text)
   names(parts)[names(parts) == "text"] <- "part.name"
 
+  # for some situations, we'll have caught all items - this pulls the items
+  parts$part.name <-
+    gsub("[\\.[:space:\u00a0]*item[[:space:]\u00a0]+[[:digit:]]{1}[[:alnum:]]{0,2}.*$", "",
+         parts$part.name,
+         ignore.case = T)
+
+  # \u2014 is em-dash
   item.lines <-
-    grepl("^item[[:space:]\u00a0]+[[:digit:]]{1}[[:alnum:]]{0,2}([\\.:\u00a0]|$)",
+    grepl("^(part [IV]{1,3}. )?item[[:space:]\u00a0]+[[:digit:]]{1}[[:alnum:]]{0,2}([\\.:\u00a0\u2014 ]|$)",
           doc.parsed$text, ignore.case = TRUE) &
-    !endsWith(doc.parsed$text, "(Continued)")
+    !endsWith(doc.parsed$text, "(Continued)") &
+    (nchar(doc.parsed$text) < 300) # catch some bad item lines
   doc.parsed$item <- cumsum(item.lines)
 
   items <- doc.parsed[item.lines, c("part", "item", "text", "original_order")]
   items$text <- gsub("[\u00a0[:space:]]+", " ", items$text)
   # items$item.number <- gsub("(*UCP)^item\\s*|\\..*", "", items$text, perl = TRUE)
   names(items)[names(items) == "text"] <- "item.name"
+  # Strip the starting Part if present
+  items$item.name <- gsub("^part [IV]{1,3}\\. ", "", items$item.name,
+                          ignore.case = T)
 
   ##
   # Remove parts/items w/in the TOC
