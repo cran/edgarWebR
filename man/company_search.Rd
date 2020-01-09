@@ -4,9 +4,18 @@
 \alias{company_search}
 \title{SEC Company Search}
 \usage{
-company_search(x, match = "start", file_number = FALSE, state = "",
-  country = "", sic = "", ownership = FALSE, type = "", count = 40,
-  page = 1)
+company_search(
+  x,
+  match = "start",
+  file_number = FALSE,
+  state = "",
+  country = "",
+  sic = "",
+  ownership = FALSE,
+  type = "",
+  count = 40,
+  page = 1
+)
 }
 \arguments{
 \item{x}{Name of company to search or file number}
@@ -66,6 +75,16 @@ A dataframe of companies
 Provides access to the SEC Company Name Search from
 \href{https://www.sec.gov/edgar/searchedgar/companysearch.html}{here}
 using a company's formal name rather than its common name.
+}
+\details{
+\emph{Note On 'Fast Search'} --
+The SEC
+\href{https://www.sec.gov/edgar/searchedgar/companysearch.html}{Company Search}
+page also includes a 'Fast Search' function to "search" by CIK or Stock
+Ticker. This doesn't actually search, but rather goes directly to the
+company details page if found. If you have a company's CIK or Ticker, use the
+\code{\link{company_information}}, \code{\link{company_filings}}, or
+\code{\link{company_details}} functions.
 }
 \examples{
 company_search("Intel")

@@ -114,13 +114,24 @@ parse_text_filing <- function(x,
                               include.raw = FALSE,
                               fix.errors = TRUE) {
   doc <- charToText(x)
-  if (strip) {
-    doc <- gsub("^<PAGE>[:blank:]*[:digit:]+$", "", doc)
-  }
+
+  # Make sure page markers are isolated
+  doc <- gsub("([^\\n])\\n<PAGE>", "\\1\n\n<PAGE>", doc)
+  doc <- gsub("(<PAGE>[^\n]*)\\n([^\n])", "\\1\n\n\\2", doc)
+
+
+  # Clean empty lines
+  doc <- gsub("\\n +\\n", "\n\n", doc)
   parts <- data.frame(text = trimws(unlist(strsplit(doc, "\n{2,}"))),
                       stringsAsFactors = F)
   if (strip) {
+    # Remove SGML front/end matter
     parts$text[1] <- sub("^.*<TEXT>[ \n]*", "", parts$text[1])
+    parts$text[nrow(parts)] <- sub("</TEXT>.*$", "", parts$text[nrow(parts)])
+
+    parts <- parts[
+      !grepl("^<PAGE>[[:blank:]]*[[:digit:]]*[[:blank:]]*$", parts$text),
+      , drop = FALSE]
 
     parts <- parts[parts$text != "", , drop = FALSE]
   }
@@ -217,10 +228,14 @@ doc_nodes <- function(doc, xpath_base) {
     "/div/table[count(./tr) < count(./tr/td)]",
     "/div/div/table[count(./tr) < count(./tr/td)]",
     "/div/div/div/table[count(./tr) < count(./tr/td)]",
-    "/div/div/div/div/table[count(./tr) < count(./tr/td)]"
+    "/div/div/div/div/table[count(./tr) < count(./tr/td)]",
     # "bare" text blocks
     # Only impacts a few filings for huge performance hit.
     # "/text()[normalize-space() != '']"
+
+    # Nasty deeply nested table from
+    # https://www.sec.gov/Archives/edgar/data/1065648/000106564809000009/form_10k.htm
+    "/div/div/div/div/div/div/div/div/div/div/table"
     )
 
 

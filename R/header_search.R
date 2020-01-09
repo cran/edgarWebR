@@ -1,10 +1,10 @@
 #' SEC Header Search
 #'
 #' Searches filing headers going back to 1994 excluding the most recent day
-#' using the interface \href{here}{https://www.sec.gov/cgi-bin/srch-edgar}.
+#' using the interface \href{https://www.sec.gov/cgi-bin/srch-edgar}{here}
 #'
 #' @param q The search string. Documentation
-#'   \href{here}{https://www.sec.gov/edgar/searchedgar/search_help.htm}
+#'   \href{https://www.sec.gov/edgar/searchedgar/search_help.htm}{here}
 #' @param from Start year (default: 1994)
 #' @param to End year (default: Current year)
 #' @param page Which results page to return (default: 1)
@@ -33,6 +33,9 @@ header_search <- function(q, page = 1, from = 1994, to = 2017) {
                    "&count=80")
   }
   res <- httr::GET(href)
+  if (res$status != "200") {
+    stop("Unable to reach the SEC company search endpoint (https://www.sec.gov/cgi-bin/srch-edgar)")
+  }
   doc <- xml2::read_html(res, base_url = href)
 
   entries_xpath <- "body/div/table/tr[position() > 1]"

@@ -1,12 +1,16 @@
 ---
 title: "Parsing Functions in edgarWebR"
 output: rmarkdown::html_vignette
-date: "October 12, 2017"
+date: 2017-10-12
 author: "Micah J Waldstein <micah@waldste.in>"
 vignette: >
   %\VignetteIndexEntry{Parsing Functions in edgarWebR}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
+projects: ['edgarWebR']
+categories: ['RStats']
+type: post
+draft: false
 ---
 ```{r setup, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(collapse = T, comment = "#>")
@@ -18,9 +22,13 @@ good R packages for XBRL processing, there is a gap in extracting information
 from other document types available via the site. edgarWebR currently provides
 functions for 2 of those -
 
- * `parse_submission()` - Processes a raw SGML filing into component documents
+ * `parse_submission()` - Processes a raw SGML filing into component
+   documents. These are the 'Complete submission text file' on filing pages.
+   Similar to zip files, they contain all the files included in particular
+   submission.
  * `parse_filing()` - Processes a narrative filing (e.g. 10-K, 10-Q) into
-   paragraphs annotated with part and item numbers
+   paragraphs annotated with part and item numbers. In a submission with many
+   files, this is the main form.
 
 This vignette will show how to use both functions to find the risks reported by
 in a company's recent filing.
