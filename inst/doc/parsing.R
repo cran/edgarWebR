@@ -2,6 +2,9 @@
 knitr::opts_chunk$set(collapse = T, comment = "#>")
 library(edgarWebR)
 set.seed(0451)
+# Cache http requests
+library(httptest)
+start_vignette("parsing")
 
 ## ----companyInfo--------------------------------------------------------------
 ticker <- "STX"
@@ -70,4 +73,8 @@ risks
 ## ----eval=FALSE---------------------------------------------------------------
 #  # install.packages("devtools")
 #  devtools::install_github("mwaldstein/edgarWebR")
+
+## ---- include=FALSE-----------------------------------------------------------
+# Cleanup
+end_vignette()
 

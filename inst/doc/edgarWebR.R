@@ -1,10 +1,13 @@
-## ----setup, echo = FALSE, message = FALSE-------------------------------------
+## ----setup--------------------------------------------------------------------
 knitr::opts_chunk$set(collapse = T, comment = "#>")
 library(edgarWebR)
-library(dplyr)
-library(purrr)
+library(dplyr, quietly=TRUE)
+library(purrr, quietly=TRUE)
 library(ggplot2)
 set.seed(0451)
+# Cache http requests
+library(httptest)
+start_vignette("intro")
 
 ## ----companyInfo--------------------------------------------------------------
 ticker <- "EA"
@@ -23,11 +26,13 @@ knitr::kable(tail(filings)[, c("type", "filing_date", "accession_number", "size"
              digits = 2,
              format.args = list(big.mark = ","))
 
-## ----filingInfo,cache = TRUE--------------------------------------------------
+## ----filingInfo---------------------------------------------------------------
 # this can take a while - we're fetching ~100 html files!
 filing_infos <- map_df(filings$href, filing_information)
 
-filings <- bind_cols(filings, filing_infos)
+filings <- bind_cols(
+                     filings[, !(names(filings) %in% names(filing_infos))],
+                     filing_infos)
 filings$filing_delay <- filings$filing_date - filings$period_date
 
 # Take a peak at the data
@@ -74,4 +79,8 @@ ggplot(filings, aes(x = filing_date, y = bytes / 1024, group = type, color = typ
 ## ----eval=FALSE---------------------------------------------------------------
 #  # install.packages("devtools")
 #  devtools::install_github("mwaldstein/edgarWebR")
+
+## ---- include=FALSE-----------------------------------------------------------
+# Cleanup
+end_vignette()
 

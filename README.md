@@ -3,6 +3,12 @@
 
 # edgarWebR
 
+## NOTES:
+
+  - A bug was encountered on the Solaris CRAN checks which led to the
+    package being removed from CRAN. I’m working on a fix, but not
+    having access to the platform makes testing challenging.
+
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/edgarWebR)](https://cran.r-project.org/package=edgarWebR)
 [![Travis-CI Build
 Status](https://travis-ci.org/mwaldstein/edgarWebR.svg?branch=master)](https://travis-ci.org/mwaldstein/edgarWebR)
@@ -16,7 +22,7 @@ Status](https://ci.appveyor.com/api/projects/status/github/mwaldstein/edgarWebR?
 ## Introduction
 
 edgarWebR provides an interface to access the [SEC’s EDGAR
-system](https://www.sec.gov/edgar/searchedgar/webusers.htm) for company
+system](https://www.sec.gov/edgar/search-and-access) for company
 financial filings.
 
 edgarWebR does *not* provide any functionality to extract financial data
@@ -26,9 +32,9 @@ information. For processing of the financial data.
 ## EDGAR Tools
 
 The EDGAR System provides a number of
-[tools](https://www.sec.gov/edgar/searchedgar/webusers.htm) for filing
-and entity lookup and examination. As of v1.0, edgarWebR supports all
-public search and browse interfaces.
+[tools](https://www.sec.gov/edgar/search-and-access) for filing and
+entity lookup and examination. As of v1.0, edgarWebR supports all public
+search and browse interfaces.
 
 *Search Interfaces:*
 
