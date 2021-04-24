@@ -1,15 +1,15 @@
 context("running variable_insurance_search")
 
-with_mock_API({
+with_mock_api({
   test_that("running", {
     res <- variable_insurance_search("precious metals")
     expect_is(res, "data.frame")
 
     expect_length(res, 12)
-    expect_equal(nrow(res), 79)
-    expect_length(unique(res$class_id), 79)
+    expect_equal(nrow(res), 80)
+    expect_length(unique(res$class_id), 80)
 
-    test.row <- res[75, ]
+    test.row <- res[76, ]
     expect_equal(test.row$class_id, "C000092800")
     expect_equal(test.row$class_name, "Administrator Class")
     expect_equal(test.row$cik, "0001081400")

@@ -1,8 +1,8 @@
 context("running company_filings")
 
-with_mock_API({
+with_mock_api({
 test_that("running", {
-  expect_error(company_filings("EAR"))
+  expect_error(company_filings("BAD"))
   res <- company_filings("AAPL")
   expect_is(res, "data.frame")
 
